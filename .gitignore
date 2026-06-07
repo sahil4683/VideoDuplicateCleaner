@@ -1,0 +1,24 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Android Studio
+*.iml
+.idea/
+local.properties
+*.DS_Store
+
+# Signing
+*.jks
+*.keystore
+
+# Debug APK output
+app/build/outputs/apk/debug/
+
+# Generated schemas
+app/schemas/
+
+# Proguard mapping
+*.mapping

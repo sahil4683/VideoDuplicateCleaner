@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme (Compose handles everything; this just sets the splash) -->
+    <style name="Theme.VideoDuplicateCleaner" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- Splash screen theme (uses Android 12 SplashScreen API) -->
+    <style name="Theme.VideoDuplicateCleaner.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#1565C0</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.VideoDuplicateCleaner</item>
+    </style>
+</resources>

@@ -1,0 +1,24 @@
+build:
+  maxIssues: 0
+
+style:
+  MagicNumber:
+    ignoreNumbers: ['-1', '0', '1', '2', '4', '8', '16', '100', '1000']
+  MaxLineLength:
+    maxLineLength: 130
+  WildcardImport:
+    active: false
+
+complexity:
+  LongMethod:
+    threshold: 80
+  LongParameterList:
+    threshold: 8
+  TooManyFunctions:
+    thresholdInClasses: 20
+
+performance:
+  active: true
+
+potential-bugs:
+  active: true

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Video Duplicate Cleaner</string>
+    <string name="permission_rationale">To scan for duplicate videos, we need permission to access your media files. No files are modified without your explicit approval.</string>
+    <string name="scan_notification_title">Video Duplicate Cleaner</string>
+    <string name="scan_notification_text">Scanning for duplicate videos…</string>
+</resources>
