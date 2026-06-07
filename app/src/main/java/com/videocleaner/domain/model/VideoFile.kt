@@ -10,16 +10,16 @@ data class VideoFile(
     val id: Long,
     val uri: Uri,
     val fileName: String,
-    val size: Long,           // bytes
-    val duration: Long,       // milliseconds
+    val size: Long, // bytes
+    val duration: Long, // milliseconds
     val width: Int,
     val height: Int,
-    val dateCreated: Long,    // epoch seconds
-    val dateModified: Long,   // epoch seconds
+    val dateCreated: Long, // epoch seconds
+    val dateModified: Long, // epoch seconds
     val folder: String,
     val mimeType: String,
     val sha256: String? = null,
-    val partialHash: String? = null
+    val partialHash: String? = null,
 ) {
     /** Human-readable file size */
     val formattedSize: String get() = formatBytes(size)
@@ -38,7 +38,7 @@ data class VideoFile(
     }
 
     /** Resolution string e.g. "1920×1080" */
-    val resolution: String get() = "${width}×${height}"
+    val resolution: String get() = "$width×$height"
 
     private fun formatBytes(bytes: Long): String {
         return when {

@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.videocleaner.domain.model.DuplicateGroup
-import com.videocleaner.domain.model.VideoFile
 import com.videocleaner.presentation.components.ConfirmDeleteDialog
 import com.videocleaner.presentation.components.VideoCard
 
@@ -26,7 +25,7 @@ import com.videocleaner.presentation.components.VideoCard
 fun ExactDuplicatesScreen(
     onVideoClick: (String) -> Unit,
     onBack: () -> Unit,
-    viewModel: ExactDuplicatesViewModel = hiltViewModel()
+    viewModel: ExactDuplicatesViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -53,11 +52,11 @@ fun ExactDuplicatesScreen(
                             Icon(
                                 Icons.Default.Delete,
                                 "Delete selected",
-                                tint = MaterialTheme.colorScheme.error
+                                tint = MaterialTheme.colorScheme.error,
                             )
                         }
                     }
-                }
+                },
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -65,21 +64,23 @@ fun ExactDuplicatesScreen(
             if (uiState.selectedVideoIds.isNotEmpty()) {
                 BottomAppBar {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = "${uiState.selectedVideoIds.size} selected",
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleMedium,
                         )
                         Button(
                             onClick = viewModel::showDeleteConfirmation,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.error
-                            )
+                            colors =
+                                ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                ),
                         ) {
                             Icon(Icons.Default.Delete, null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(4.dp))
@@ -88,7 +89,7 @@ fun ExactDuplicatesScreen(
                     }
                 }
             }
-        }
+        },
     ) { padding ->
         when {
             uiState.isLoading -> {
@@ -101,15 +102,16 @@ fun ExactDuplicatesScreen(
             }
             else -> {
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding),
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(
                         items = uiState.groups,
-                        key = { it.groupId }
+                        key = { it.groupId },
                     ) { group ->
                         DuplicateGroupCard(
                             group = group,
@@ -118,7 +120,7 @@ fun ExactDuplicatesScreen(
                             onVideoClick = { uri -> onVideoClick(uri) },
                             onSelectExceptLargest = { viewModel.selectAllExceptLargest(group) },
                             onSelectExceptNewest = { viewModel.selectAllExceptNewest(group) },
-                            onSelectExceptHighestRes = { viewModel.selectAllExceptHighestRes(group) }
+                            onSelectExceptHighestRes = { viewModel.selectAllExceptHighestRes(group) },
                         )
                     }
                 }
@@ -132,7 +134,7 @@ fun ExactDuplicatesScreen(
             fileCount = uiState.selectedVideoIds.size,
             totalSize = formatBytes(selectedSize),
             onConfirm = viewModel::deleteSelected,
-            onDismiss = viewModel::dismissDeleteConfirmation
+            onDismiss = viewModel::dismissDeleteConfirmation,
         )
     }
 }
@@ -145,7 +147,7 @@ private fun DuplicateGroupCard(
     onVideoClick: (String) -> Unit,
     onSelectExceptLargest: () -> Unit,
     onSelectExceptNewest: () -> Unit,
-    onSelectExceptHighestRes: () -> Unit
+    onSelectExceptHighestRes: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -155,24 +157,24 @@ private fun DuplicateGroupCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column {
                     Text(
                         text = "${group.count} identical videos",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Text(
                         text = "Saves ${formatBytes(group.recoverableSize)}",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
                 IconButton(onClick = { expanded = !expanded }) {
                     Icon(
                         if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        contentDescription = if (expanded) "Collapse" else "Expand"
+                        contentDescription = if (expanded) "Collapse" else "Expand",
                     )
                 }
             }
@@ -186,24 +188,24 @@ private fun DuplicateGroupCard(
                 Text(
                     text = "Smart Select",
                     style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(4.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilterChip(
                         selected = false,
                         onClick = onSelectExceptLargest,
-                        label = { Text("Keep Largest", style = MaterialTheme.typography.labelMedium) }
+                        label = { Text("Keep Largest", style = MaterialTheme.typography.labelMedium) },
                     )
                     FilterChip(
                         selected = false,
                         onClick = onSelectExceptNewest,
-                        label = { Text("Keep Newest", style = MaterialTheme.typography.labelMedium) }
+                        label = { Text("Keep Newest", style = MaterialTheme.typography.labelMedium) },
                     )
                     FilterChip(
                         selected = false,
                         onClick = onSelectExceptHighestRes,
-                        label = { Text("Keep HD", style = MaterialTheme.typography.labelMedium) }
+                        label = { Text("Keep HD", style = MaterialTheme.typography.labelMedium) },
                     )
                 }
                 Spacer(Modifier.height(8.dp))
@@ -216,7 +218,7 @@ private fun DuplicateGroupCard(
                         selectionEnabled = true,
                         onSelect = { selected -> onVideoSelect(video.id, selected) },
                         onThumbnailClick = { onVideoClick(video.uri.toString()) },
-                        modifier = Modifier.padding(vertical = 4.dp)
+                        modifier = Modifier.padding(vertical = 4.dp),
                     )
                 }
             }
@@ -228,28 +230,29 @@ private fun DuplicateGroupCard(
 private fun EmptyState(message: String) {
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
                 Icons.Default.CheckCircle,
                 null,
                 modifier = Modifier.size(72.dp),
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.primary,
             )
             Spacer(Modifier.height(16.dp))
             Text(
                 text = message,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
 }
 
-private fun formatBytes(bytes: Long): String = when {
-    bytes >= 1_073_741_824 -> "%.1f GB".format(bytes / 1_073_741_824.0)
-    bytes >= 1_048_576 -> "%.1f MB".format(bytes / 1_048_576.0)
-    bytes >= 1_024 -> "%.1f KB".format(bytes / 1_024.0)
-    else -> "$bytes B"
-}
+private fun formatBytes(bytes: Long): String =
+    when {
+        bytes >= 1_073_741_824 -> "%.1f GB".format(bytes / 1_073_741_824.0)
+        bytes >= 1_048_576 -> "%.1f MB".format(bytes / 1_048_576.0)
+        bytes >= 1_024 -> "%.1f KB".format(bytes / 1_024.0)
+        else -> "$bytes B"
+    }

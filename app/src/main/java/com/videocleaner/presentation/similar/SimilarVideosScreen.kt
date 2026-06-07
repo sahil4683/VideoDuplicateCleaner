@@ -25,7 +25,7 @@ import com.videocleaner.presentation.components.VideoCard
 fun SimilarVideosScreen(
     onVideoClick: (String) -> Unit,
     onBack: () -> Unit,
-    viewModel: SimilarVideosViewModel = hiltViewModel()
+    viewModel: SimilarVideosViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -52,10 +52,10 @@ fun SimilarVideosScreen(
                             Icon(Icons.Default.Delete, "Delete", tint = MaterialTheme.colorScheme.error)
                         }
                     }
-                }
+                },
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         when {
             uiState.isLoading -> {
@@ -66,7 +66,12 @@ fun SimilarVideosScreen(
             uiState.groups.isEmpty() -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.CheckCircle, null, modifier = Modifier.size(72.dp), tint = MaterialTheme.colorScheme.primary)
+                        Icon(
+                            Icons.Default.CheckCircle,
+                            null,
+                            modifier = Modifier.size(72.dp),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
                         Spacer(Modifier.height(16.dp))
                         Text("No similar videos found.", style = MaterialTheme.typography.bodyLarge)
                     }
@@ -74,18 +79,19 @@ fun SimilarVideosScreen(
             }
             else -> {
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding),
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(uiState.groups, key = { it.groupId }) { group ->
                         SimilarGroupCard(
                             group = group,
                             selectedIds = uiState.selectedVideoIds,
                             onVideoSelect = { id, _ -> viewModel.toggleVideoSelection(id) },
-                            onVideoClick = { uri -> onVideoClick(uri) }
+                            onVideoClick = { uri -> onVideoClick(uri) },
                         )
                     }
                 }
@@ -98,7 +104,7 @@ fun SimilarVideosScreen(
             fileCount = uiState.selectedVideoIds.size,
             totalSize = "selected files",
             onConfirm = viewModel::deleteSelected,
-            onDismiss = viewModel::dismissDeleteConfirmation
+            onDismiss = viewModel::dismissDeleteConfirmation,
         )
     }
 }
@@ -108,7 +114,7 @@ private fun SimilarGroupCard(
     group: DuplicateGroup,
     selectedIds: Set<Long>,
     onVideoSelect: (Long, Boolean) -> Unit,
-    onVideoClick: (String) -> Unit
+    onVideoClick: (String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -117,13 +123,13 @@ private fun SimilarGroupCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column {
                     Text(
                         text = "${group.count} similar videos",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         SimilarityBadge(percent = group.similarityScore)
@@ -131,14 +137,14 @@ private fun SimilarGroupCard(
                         Text(
                             text = "similarity",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
                 IconButton(onClick = { expanded = !expanded }) {
                     Icon(
                         if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        null
+                        null,
                     )
                 }
             }
@@ -154,7 +160,7 @@ private fun SimilarGroupCard(
                         selectionEnabled = true,
                         onSelect = { selected -> onVideoSelect(video.id, selected) },
                         onThumbnailClick = { onVideoClick(video.uri.toString()) },
-                        modifier = Modifier.padding(vertical = 4.dp)
+                        modifier = Modifier.padding(vertical = 4.dp),
                     )
                 }
             }
@@ -164,20 +170,21 @@ private fun SimilarGroupCard(
 
 @Composable
 private fun SimilarityBadge(percent: Float) {
-    val color = when {
-        percent >= 95 -> MaterialTheme.colorScheme.error
-        percent >= 85 -> MaterialTheme.colorScheme.tertiary
-        else -> MaterialTheme.colorScheme.primary
-    }
+    val color =
+        when {
+            percent >= 95 -> MaterialTheme.colorScheme.error
+            percent >= 85 -> MaterialTheme.colorScheme.tertiary
+            else -> MaterialTheme.colorScheme.primary
+        }
     Surface(
         shape = MaterialTheme.shapes.small,
-        color = color.copy(alpha = 0.15f)
+        color = color.copy(alpha = 0.15f),
     ) {
         Text(
             text = "%.0f%%".format(percent),
             style = MaterialTheme.typography.labelLarge,
             color = color,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         )
     }
 }

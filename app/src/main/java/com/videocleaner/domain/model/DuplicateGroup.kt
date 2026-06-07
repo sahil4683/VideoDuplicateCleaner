@@ -12,7 +12,7 @@ data class DuplicateGroup(
     val groupId: String,
     val type: DuplicateType,
     val videos: List<VideoFile>,
-    val similarityScore: Float = 100f
+    val similarityScore: Float = 100f,
 ) {
     /** Total size of all videos in this group */
     val totalSize: Long get() = videos.sumOf { it.size }
@@ -25,6 +25,6 @@ data class DuplicateGroup(
 }
 
 enum class DuplicateType {
-    EXACT,    // SHA-256 hash match
-    SIMILAR   // Perceptual hash similarity > threshold
+    EXACT, // SHA-256 hash match
+    SIMILAR, // Perceptual hash similarity > threshold
 }

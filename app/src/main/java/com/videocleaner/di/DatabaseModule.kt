@@ -19,14 +19,15 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
+    fun provideDatabase(
+        @ApplicationContext context: Context,
+    ): AppDatabase {
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java,
-            AppDatabase.DATABASE_NAME
+            AppDatabase.DATABASE_NAME,
         )
             .fallbackToDestructiveMigration() // For development; use proper migrations in production
             .build()
@@ -38,6 +39,5 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDuplicateGroupDao(database: AppDatabase): DuplicateGroupDao =
-        database.duplicateGroupDao()
+    fun provideDuplicateGroupDao(database: AppDatabase): DuplicateGroupDao = database.duplicateGroupDao()
 }

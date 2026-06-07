@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 interface VideoDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(videos: List<VideoEntity>)
 
@@ -49,11 +48,13 @@ interface VideoDao {
      * Groups videos by size and returns only sizes that have more than one video.
      * This is Stage 1 of exact duplicate detection.
      */
-    @Query("""
+    @Query(
+        """
         SELECT size FROM videos 
         GROUP BY size 
         HAVING COUNT(*) > 1
-    """)
+    """,
+    )
     suspend fun getSizesWithDuplicates(): List<Long>
 
     /**
@@ -75,12 +76,18 @@ interface VideoDao {
     /**
      * Updates only the hash fields to avoid re-fetching entire entity.
      */
-    @Query("""
+    @Query(
+        """
         UPDATE videos 
         SET sha256 = :sha256, partialHash = :partialHash, isHashed = 1 
         WHERE id = :id
-    """)
-    suspend fun updateHash(id: Long, sha256: String, partialHash: String)
+    """,
+    )
+    suspend fun updateHash(
+        id: Long,
+        sha256: String,
+        partialHash: String,
+    )
 
     @Query("SELECT * FROM videos WHERE id IN (:ids)")
     suspend fun getVideosByIds(ids: List<Long>): List<VideoEntity>

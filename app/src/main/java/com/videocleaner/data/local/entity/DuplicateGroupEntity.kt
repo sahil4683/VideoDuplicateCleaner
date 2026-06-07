@@ -13,5 +13,5 @@ data class DuplicateGroupEntity(
     /** "EXACT" or "SIMILAR" */
     val type: String,
     val similarityScore: Float = 100f,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
 )

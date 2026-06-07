@@ -27,21 +27,24 @@ import com.videocleaner.domain.model.ScanProgress
 fun ScanProgressScreen(
     onComplete: () -> Unit,
     onBack: () -> Unit,
-    viewModel: ScanProgressViewModel = hiltViewModel()
+    viewModel: ScanProgressViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // Permission launcher
-    val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-        Manifest.permission.READ_MEDIA_VIDEO
-    else
-        Manifest.permission.READ_EXTERNAL_STORAGE
+    val permission =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_VIDEO
+        } else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        if (granted) viewModel.startScan()
-    }
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { granted ->
+            if (granted) viewModel.startScan()
+        }
 
     LaunchedEffect(uiState.isComplete) {
         if (uiState.isComplete) {
@@ -60,37 +63,47 @@ fun ScanProgressScreen(
                             Icon(Icons.Default.ArrowBack, "Back")
                         }
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(32.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             when {
-                uiState.isComplete -> CompleteScanState(
-                    stats = uiState.completedStats,
-                    onViewResults = onComplete
-                )
+                uiState.isComplete ->
+                    CompleteScanState(
+                        stats = uiState.completedStats,
+                        onViewResults = onComplete,
+                    )
                 uiState.isScanning -> ActiveScanState(uiState = uiState, onCancel = viewModel::cancelScan)
-                uiState.error != null -> ErrorState(
-                    error = uiState.error!!,
-                    onRetry = {
-                        if (viewModel.hasStoragePermission()) viewModel.startScan()
-                        else permissionLauncher.launch(permission)
-                    }
-                )
-                else -> IdleState(
-                    onStart = {
-                        if (viewModel.hasStoragePermission()) viewModel.startScan()
-                        else permissionLauncher.launch(permission)
-                    }
-                )
+                uiState.error != null ->
+                    ErrorState(
+                        error = uiState.error!!,
+                        onRetry = {
+                            if (viewModel.hasStoragePermission()) {
+                                viewModel.startScan()
+                            } else {
+                                permissionLauncher.launch(permission)
+                            }
+                        },
+                    )
+                else ->
+                    IdleState(
+                        onStart = {
+                            if (viewModel.hasStoragePermission()) {
+                                viewModel.startScan()
+                            } else {
+                                permissionLauncher.launch(permission)
+                            }
+                        },
+                    )
             }
         }
     }
@@ -102,27 +115,28 @@ private fun IdleState(onStart: () -> Unit) {
         Icons.Default.VideoLibrary,
         null,
         modifier = Modifier.size(80.dp),
-        tint = MaterialTheme.colorScheme.primary
+        tint = MaterialTheme.colorScheme.primary,
     )
     Spacer(Modifier.height(24.dp))
     Text(
         text = "Ready to Scan",
         style = MaterialTheme.typography.headlineMedium,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
     )
     Spacer(Modifier.height(8.dp))
     Text(
         text = "Tap Start Scan to analyze all videos on your device and find duplicates.",
         style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.Center,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     Spacer(Modifier.height(32.dp))
     Button(
         onClick = onStart,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(56.dp),
     ) {
         Icon(Icons.Default.Search, null)
         Spacer(Modifier.width(8.dp))
@@ -131,29 +145,32 @@ private fun IdleState(onStart: () -> Unit) {
 }
 
 @Composable
-private fun ActiveScanState(uiState: ScanProgressUiState, onCancel: () -> Unit) {
+private fun ActiveScanState(
+    uiState: ScanProgressUiState,
+    onCancel: () -> Unit,
+) {
     CircularProgressIndicator(
         progress = { uiState.percentage / 100f },
         modifier = Modifier.size(120.dp),
-        strokeWidth = 8.dp
+        strokeWidth = 8.dp,
     )
     Spacer(Modifier.height(16.dp))
     Text(
         text = "${uiState.percentage.toInt()}%",
         style = MaterialTheme.typography.headlineLarge,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
     )
     Spacer(Modifier.height(8.dp))
     Text(
         text = phaseLabel(uiState.phase),
         style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.primary
+        color = MaterialTheme.colorScheme.primary,
     )
     Spacer(Modifier.height(4.dp))
     Text(
         text = "${uiState.current} / ${uiState.total} files",
         style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     if (uiState.currentFile.isNotEmpty()) {
         Spacer(Modifier.height(4.dp))
@@ -161,7 +178,7 @@ private fun ActiveScanState(uiState: ScanProgressUiState, onCancel: () -> Unit) 
             text = uiState.currentFile,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1
+            maxLines = 1,
         )
     }
     Spacer(Modifier.height(32.dp))
@@ -171,18 +188,21 @@ private fun ActiveScanState(uiState: ScanProgressUiState, onCancel: () -> Unit) 
 }
 
 @Composable
-private fun CompleteScanState(stats: ScanProgress.Complete?, onViewResults: () -> Unit) {
+private fun CompleteScanState(
+    stats: ScanProgress.Complete?,
+    onViewResults: () -> Unit,
+) {
     Icon(
         Icons.Default.CheckCircle,
         null,
         modifier = Modifier.size(80.dp),
-        tint = MaterialTheme.colorScheme.primary
+        tint = MaterialTheme.colorScheme.primary,
     )
     Spacer(Modifier.height(24.dp))
     Text(
         text = "Scan Complete!",
         style = MaterialTheme.typography.headlineMedium,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
     )
     Spacer(Modifier.height(16.dp))
     if (stats != null) {
@@ -198,42 +218,49 @@ private fun CompleteScanState(stats: ScanProgress.Complete?, onViewResults: () -
 }
 
 @Composable
-private fun ScanResultItem(label: String, value: String) {
+private fun ScanResultItem(
+    label: String,
+    value: String,
+) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(text = label, style = MaterialTheme.typography.bodyLarge)
         Text(
             text = value,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
         )
     }
 }
 
 @Composable
-private fun ErrorState(error: String, onRetry: () -> Unit) {
+private fun ErrorState(
+    error: String,
+    onRetry: () -> Unit,
+) {
     Icon(
         Icons.Default.Error,
         null,
         modifier = Modifier.size(80.dp),
-        tint = MaterialTheme.colorScheme.error
+        tint = MaterialTheme.colorScheme.error,
     )
     Spacer(Modifier.height(16.dp))
     Text(
         text = "Scan Failed",
         style = MaterialTheme.typography.headlineMedium,
-        color = MaterialTheme.colorScheme.error
+        color = MaterialTheme.colorScheme.error,
     )
     Spacer(Modifier.height(8.dp))
     Text(
         text = error,
         style = MaterialTheme.typography.bodyLarge,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(24.dp))
     Button(onClick = onRetry) {
@@ -241,17 +268,19 @@ private fun ErrorState(error: String, onRetry: () -> Unit) {
     }
 }
 
-private fun phaseLabel(phase: ScanPhase): String = when (phase) {
-    ScanPhase.INDEXING -> "Indexing videos..."
-    ScanPhase.GROUPING_BY_SIZE -> "Grouping by size..."
-    ScanPhase.COMPUTING_HASHES -> "Computing hashes..."
-    ScanPhase.ANALYZING_FRAMES -> "Analyzing frames..."
-    ScanPhase.FINALIZING -> "Finalizing..."
-}
+private fun phaseLabel(phase: ScanPhase): String =
+    when (phase) {
+        ScanPhase.INDEXING -> "Indexing videos..."
+        ScanPhase.GROUPING_BY_SIZE -> "Grouping by size..."
+        ScanPhase.COMPUTING_HASHES -> "Computing hashes..."
+        ScanPhase.ANALYZING_FRAMES -> "Analyzing frames..."
+        ScanPhase.FINALIZING -> "Finalizing..."
+    }
 
-private fun formatBytes(bytes: Long): String = when {
-    bytes >= 1_073_741_824 -> "%.1f GB".format(bytes / 1_073_741_824.0)
-    bytes >= 1_048_576 -> "%.1f MB".format(bytes / 1_048_576.0)
-    bytes >= 1_024 -> "%.1f KB".format(bytes / 1_024.0)
-    else -> "$bytes B"
-}
+private fun formatBytes(bytes: Long): String =
+    when {
+        bytes >= 1_073_741_824 -> "%.1f GB".format(bytes / 1_073_741_824.0)
+        bytes >= 1_048_576 -> "%.1f MB".format(bytes / 1_048_576.0)
+        bytes >= 1_024 -> "%.1f KB".format(bytes / 1_024.0)
+        else -> "$bytes B"
+    }

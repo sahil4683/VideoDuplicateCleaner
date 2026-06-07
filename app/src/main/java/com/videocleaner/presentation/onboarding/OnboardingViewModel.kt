@@ -10,16 +10,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class OnboardingViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository
-) : ViewModel() {
+class OnboardingViewModel
+    @Inject
+    constructor(
+        private val settingsRepository: SettingsRepository,
+    ) : ViewModel() {
+        val hasSeenOnboarding =
+            settingsRepository.hasSeenOnboardingFlow
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val hasSeenOnboarding = settingsRepository.hasSeenOnboardingFlow
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-
-    fun completeOnboarding() {
-        viewModelScope.launch {
-            settingsRepository.markOnboardingComplete()
+        fun completeOnboarding() {
+            viewModelScope.launch {
+                settingsRepository.markOnboardingComplete()
+            }
         }
     }
-}

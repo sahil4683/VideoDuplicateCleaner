@@ -19,7 +19,6 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         // Install splash screen before super.onCreate
         installSplashScreen()
@@ -31,7 +30,7 @@ class MainActivity : ComponentActivity() {
             VideoDuplicateCleanerTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
                     AppNavigation()
                 }

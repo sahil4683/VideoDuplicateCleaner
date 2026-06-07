@@ -2,7 +2,6 @@ package com.videocleaner.util
 
 import android.graphics.Bitmap
 import kotlin.math.cos
-import kotlin.math.ln
 import kotlin.math.sqrt
 
 /**
@@ -18,9 +17,8 @@ import kotlin.math.sqrt
  * Result: 64-bit hash stored as Long
  */
 object PerceptualHash {
-
-    private const val HASH_SIZE = 8     // 8×8 = 64-bit hash
-    private const val DCT_SIZE = 32     // Resize to 32×32 before DCT
+    private const val HASH_SIZE = 8 // 8×8 = 64-bit hash
+    private const val DCT_SIZE = 32 // Resize to 32×32 before DCT
 
     /**
      * Computes the pHash of a bitmap.
@@ -31,16 +29,17 @@ object PerceptualHash {
         val resized = Bitmap.createScaledBitmap(bitmap, DCT_SIZE, DCT_SIZE, true)
 
         // Step 2: Convert to grayscale values
-        val pixels = Array(DCT_SIZE) { row ->
-            DoubleArray(DCT_SIZE) { col ->
-                val pixel = resized.getPixel(col, row)
-                val r = (pixel shr 16) and 0xFF
-                val g = (pixel shr 8) and 0xFF
-                val b = pixel and 0xFF
-                // Luminance formula (BT.709)
-                0.2126 * r + 0.7152 * g + 0.0722 * b
+        val pixels =
+            Array(DCT_SIZE) { row ->
+                DoubleArray(DCT_SIZE) { col ->
+                    val pixel = resized.getPixel(col, row)
+                    val r = (pixel shr 16) and 0xFF
+                    val g = (pixel shr 8) and 0xFF
+                    val b = pixel and 0xFF
+                    // Luminance formula (BT.709)
+                    0.2126 * r + 0.7152 * g + 0.0722 * b
+                }
             }
-        }
 
         if (resized != bitmap) resized.recycle()
 
@@ -71,14 +70,19 @@ object PerceptualHash {
      * Computes Hamming distance between two hashes.
      * Returns number of differing bits (0 = identical, 64 = completely different).
      */
-    fun hammingDistance(hash1: Long, hash2: Long): Int =
-        java.lang.Long.bitCount(hash1 xor hash2)
+    fun hammingDistance(
+        hash1: Long,
+        hash2: Long,
+    ): Int = java.lang.Long.bitCount(hash1 xor hash2)
 
     /**
      * Converts Hamming distance to similarity percentage.
      * 0 bits different = 100% similar, 64 bits different = 0% similar.
      */
-    fun similarityPercent(hash1: Long, hash2: Long): Float {
+    fun similarityPercent(
+        hash1: Long,
+        hash2: Long,
+    ): Float {
         val distance = hammingDistance(hash1, hash2)
         return ((64 - distance) / 64.0f) * 100f
     }
@@ -97,8 +101,8 @@ object PerceptualHash {
                 for (i in 0 until size) {
                     for (j in 0 until size) {
                         sum += cos((2 * i + 1) * u * Math.PI / (2 * size)) *
-                               cos((2 * j + 1) * v * Math.PI / (2 * size)) *
-                               pixels[i][j]
+                            cos((2 * j + 1) * v * Math.PI / (2 * size)) *
+                            pixels[i][j]
                     }
                 }
                 val cu = if (u == 0) 1.0 / sqrt(2.0) else 1.0

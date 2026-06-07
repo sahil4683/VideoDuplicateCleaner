@@ -18,13 +18,14 @@ import com.videocleaner.data.local.entity.VideoEntity
     entities = [
         VideoEntity::class,
         DuplicateGroupEntity::class,
-        GroupVideoEntity::class
+        GroupVideoEntity::class,
     ],
     version = 1,
-    exportSchema = true
+    exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun videoDao(): VideoDao
+
     abstract fun duplicateGroupDao(): DuplicateGroupDao
 
     companion object {

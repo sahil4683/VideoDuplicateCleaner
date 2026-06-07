@@ -2,12 +2,11 @@ package com.videocleaner.presentation
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.videocleaner.presentation.about.AboutScreen
 import com.videocleaner.presentation.dashboard.DashboardScreen
 import com.videocleaner.presentation.duplicates.ExactDuplicatesScreen
 import com.videocleaner.presentation.onboarding.OnboardingScreen
@@ -15,7 +14,6 @@ import com.videocleaner.presentation.player.VideoPlayerScreen
 import com.videocleaner.presentation.scan.ScanProgressScreen
 import com.videocleaner.presentation.settings.SettingsScreen
 import com.videocleaner.presentation.similar.SimilarVideosScreen
-import com.videocleaner.presentation.about.AboutScreen
 
 /**
  * Navigation destinations for the app.
@@ -31,19 +29,18 @@ object Routes {
     const val ABOUT = "about"
     const val VIDEO_PLAYER = "video_player/{videoUri}"
 
-    fun videoPlayer(videoUri: String): String =
-        "video_player/${java.net.URLEncoder.encode(videoUri, "UTF-8")}"
+    fun videoPlayer(videoUri: String): String = "video_player/${java.net.URLEncoder.encode(videoUri, "UTF-8")}"
 }
 
 @Composable
 fun AppNavigation(
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
 ) {
     NavHost(
         navController = navController,
         startDestination = Routes.ONBOARDING,
-        modifier = modifier
+        modifier = modifier,
     ) {
         composable(Routes.ONBOARDING) {
             OnboardingScreen(
@@ -51,7 +48,7 @@ fun AppNavigation(
                     navController.navigate(Routes.DASHBOARD) {
                         popUpTo(Routes.ONBOARDING) { inclusive = true }
                     }
-                }
+                },
             )
         }
 
@@ -61,7 +58,7 @@ fun AppNavigation(
                 onNavigateToSimilarVideos = { navController.navigate(Routes.SIMILAR_VIDEOS) },
                 onNavigateToScan = { navController.navigate(Routes.SCAN_PROGRESS) },
                 onNavigateToSettings = { navController.navigate(Routes.SETTINGS) },
-                onNavigateToAbout = { navController.navigate(Routes.ABOUT) }
+                onNavigateToAbout = { navController.navigate(Routes.ABOUT) },
             )
         }
 
@@ -70,7 +67,7 @@ fun AppNavigation(
                 onVideoClick = { uri ->
                     navController.navigate(Routes.videoPlayer(uri))
                 },
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
             )
         }
 
@@ -79,7 +76,7 @@ fun AppNavigation(
                 onVideoClick = { uri ->
                     navController.navigate(Routes.videoPlayer(uri))
                 },
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
             )
         }
 
@@ -90,7 +87,7 @@ fun AppNavigation(
                         popUpTo(Routes.DASHBOARD) { inclusive = true }
                     }
                 },
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
             )
         }
 
@@ -107,7 +104,7 @@ fun AppNavigation(
             val decodedUri = java.net.URLDecoder.decode(encodedUri, "UTF-8")
             VideoPlayerScreen(
                 videoUri = decodedUri,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
             )
         }
     }

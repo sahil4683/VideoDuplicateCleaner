@@ -13,8 +13,8 @@ import androidx.room.PrimaryKey
     indices = [
         Index(value = ["size"]),
         Index(value = ["sha256"]),
-        Index(value = ["partialHash"])
-    ]
+        Index(value = ["partialHash"]),
+    ],
 )
 data class VideoEntity(
     @PrimaryKey
@@ -32,5 +32,5 @@ data class VideoEntity(
     val sha256: String? = null,
     val partialHash: String? = null,
     val isHashed: Boolean = false,
-    val scanTimestamp: Long = System.currentTimeMillis()
+    val scanTimestamp: Long = System.currentTimeMillis(),
 )

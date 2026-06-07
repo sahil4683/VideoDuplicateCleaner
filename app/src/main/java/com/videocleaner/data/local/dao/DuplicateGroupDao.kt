@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DuplicateGroupDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGroup(group: DuplicateGroupEntity)
 

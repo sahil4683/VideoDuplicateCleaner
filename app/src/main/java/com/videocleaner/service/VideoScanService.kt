@@ -16,7 +16,6 @@ import androidx.core.app.NotificationCompat
  * just manages the Android lifecycle/notification.
  */
 class VideoScanService : Service() {
-
     companion object {
         const val CHANNEL_ID = "scan_service"
         const val NOTIFICATION_ID = 2001
@@ -31,7 +30,11 @@ class VideoScanService : Service() {
         createNotificationChannel()
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         when (intent?.action) {
             ACTION_START -> startForeground(NOTIFICATION_ID, buildNotification("Scanning videos..."))
             ACTION_STOP -> stopSelf()
@@ -55,13 +58,14 @@ class VideoScanService : Service() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Video Scanning",
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = "Shows progress while scanning for duplicate videos"
-            }
+            val channel =
+                NotificationChannel(
+                    CHANNEL_ID,
+                    "Video Scanning",
+                    NotificationManager.IMPORTANCE_LOW,
+                ).apply {
+                    description = "Shows progress while scanning for duplicate videos"
+                }
             getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
         }
     }

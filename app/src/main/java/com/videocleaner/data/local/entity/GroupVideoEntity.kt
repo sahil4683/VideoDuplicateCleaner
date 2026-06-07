@@ -16,21 +16,21 @@ import androidx.room.Index
             entity = DuplicateGroupEntity::class,
             parentColumns = ["groupId"],
             childColumns = ["groupId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = VideoEntity::class,
             parentColumns = ["id"],
             childColumns = ["videoId"],
-            onDelete = ForeignKey.CASCADE
-        )
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
     indices = [
         Index(value = ["groupId"]),
-        Index(value = ["videoId"])
-    ]
+        Index(value = ["videoId"]),
+    ],
 )
 data class GroupVideoEntity(
     val groupId: String,
-    val videoId: Long
+    val videoId: Long,
 )

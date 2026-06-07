@@ -14,8 +14,7 @@ import java.security.MessageDigest
  * 2. Full SHA-256 only when partial hashes match
  */
 object HashUtils {
-
-    private const val CHUNK_SIZE = 1_048_576L  // 1 MB
+    private const val CHUNK_SIZE = 1_048_576L // 1 MB
 
     /**
      * Computes a partial hash by sampling three 1 MB chunks:
@@ -25,7 +24,10 @@ object HashUtils {
      *
      * This is approximately 3x faster than full SHA-256 for large files.
      */
-    suspend fun computePartialHash(context: Context, uri: Uri): String? =
+    suspend fun computePartialHash(
+        context: Context,
+        uri: Uri,
+    ): String? =
         withContext(Dispatchers.IO) {
             runCatching {
                 context.contentResolver.openInputStream(uri)?.use { stream ->
@@ -62,12 +64,15 @@ object HashUtils {
      * Computes a full SHA-256 hash of the entire file.
      * Call this only after partial hashes match to confirm exact duplicates.
      */
-    suspend fun computeFullSha256(context: Context, uri: Uri): String? =
+    suspend fun computeFullSha256(
+        context: Context,
+        uri: Uri,
+    ): String? =
         withContext(Dispatchers.IO) {
             runCatching {
                 context.contentResolver.openInputStream(uri)?.use { stream ->
                     val digest = MessageDigest.getInstance("SHA-256")
-                    val buffer = ByteArray(8_192)  // 8 KB read buffer
+                    val buffer = ByteArray(8_192) // 8 KB read buffer
                     var bytesRead: Int
                     while (stream.read(buffer).also { bytesRead = it } != -1) {
                         digest.update(buffer, 0, bytesRead)
@@ -77,6 +82,5 @@ object HashUtils {
             }.getOrNull()
         }
 
-    private fun ByteArray.toHexString(): String =
-        joinToString("") { byte -> "%02x".format(byte) }
+    private fun ByteArray.toHexString(): String = joinToString("") { byte -> "%02x".format(byte) }
 }

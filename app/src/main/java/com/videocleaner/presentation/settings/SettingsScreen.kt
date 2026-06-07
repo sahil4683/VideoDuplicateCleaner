@@ -21,7 +21,7 @@ import com.videocleaner.domain.model.ScanSchedule
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
 
@@ -33,29 +33,30 @@ fun SettingsScreen(
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, "Back")
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             // Similarity threshold section
             SectionCard(title = "Duplicate Detection") {
                 Column {
                     Text(
                         text = "Similarity Threshold: ${settings.similarityThreshold}%",
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
                     )
                     Text(
                         text = "Videos above this threshold are flagged as similar",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(Modifier.height(8.dp))
                     Slider(
@@ -63,11 +64,11 @@ fun SettingsScreen(
                         onValueChange = { viewModel.updateSimilarityThreshold(it.toInt()) },
                         valueRange = 70f..99f,
                         steps = 28,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text("70% (loose)", style = MaterialTheme.typography.labelSmall)
                         Text("99% (strict)", style = MaterialTheme.typography.labelSmall)
@@ -81,28 +82,29 @@ fun SettingsScreen(
                     ScanSchedule.entries.forEach { schedule ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             RadioButton(
                                 selected = settings.autoScanSchedule == schedule,
-                                onClick = { viewModel.updateAutoScanSchedule(schedule) }
+                                onClick = { viewModel.updateAutoScanSchedule(schedule) },
                             )
                             Spacer(Modifier.width(8.dp))
                             Column {
                                 Text(
                                     text = schedule.displayName,
-                                    style = MaterialTheme.typography.bodyLarge
+                                    style = MaterialTheme.typography.bodyLarge,
                                 )
                                 if (schedule != ScanSchedule.DISABLED) {
                                     Text(
-                                        text = when (schedule) {
-                                            ScanSchedule.DAILY -> "Runs once per day when battery is not low"
-                                            ScanSchedule.WEEKLY -> "Runs once per week"
-                                            ScanSchedule.MONTHLY -> "Runs once per month"
-                                            else -> ""
-                                        },
+                                        text =
+                                            when (schedule) {
+                                                ScanSchedule.DAILY -> "Runs once per day when battery is not low"
+                                                ScanSchedule.WEEKLY -> "Runs once per week"
+                                                ScanSchedule.MONTHLY -> "Runs once per month"
+                                                else -> ""
+                                            },
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 }
                             }
@@ -118,25 +120,25 @@ fun SettingsScreen(
                         Text(
                             text = "No folders excluded. All video folders will be scanned.",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     } else {
                         settings.excludeFolders.forEach { folder ->
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Text(
                                     text = folder,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
                                 )
                                 IconButton(
                                     onClick = {
                                         val updated = settings.excludeFolders.filter { it != folder }
                                         viewModel.updateExcludeFolders(updated)
-                                    }
+                                    },
                                 ) {
                                     Icon(Icons.Default.Close, "Remove folder")
                                 }
@@ -146,7 +148,7 @@ fun SettingsScreen(
                     Spacer(Modifier.height(8.dp))
                     OutlinedButton(
                         onClick = { /* TODO: folder picker */ },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Icon(Icons.Default.Add, null)
                         Spacer(Modifier.width(8.dp))
@@ -159,13 +161,16 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SectionCard(title: String, content: @Composable () -> Unit) {
+private fun SectionCard(
+    title: String,
+    content: @Composable () -> Unit,
+) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             Spacer(Modifier.height(12.dp))
             content()

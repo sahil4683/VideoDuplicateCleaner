@@ -22,7 +22,6 @@ import org.junit.Test
  * Uses MockK to mock DAOs and Context.
  */
 class VideoRepositoryTest {
-
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -40,50 +39,54 @@ class VideoRepositoryTest {
     }
 
     @Test
-    fun `videoCountFlow emits from dao`() = runTest {
-        val expected = 42
-        coEvery { videoDao.getCountFlow() } returns flowOf(expected)
+    fun `videoCountFlow emits from dao`() =
+        runTest {
+            val expected = 42
+            coEvery { videoDao.getCountFlow() } returns flowOf(expected)
 
-        repository.videoCountFlow.test {
-            assertThat(awaitItem()).isEqualTo(expected)
-            cancelAndIgnoreRemainingEvents()
+            repository.videoCountFlow.test {
+                assertThat(awaitItem()).isEqualTo(expected)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
-    fun `exactGroupsFlow emits from dao`() = runTest {
-        val group = DuplicateGroupEntity(groupId = "g1", type = "EXACT")
-        coEvery { duplicateGroupDao.getExactDuplicateGroupsFlow() } returns flowOf(listOf(group))
+    fun `exactGroupsFlow emits from dao`() =
+        runTest {
+            val group = DuplicateGroupEntity(groupId = "g1", type = "EXACT")
+            coEvery { duplicateGroupDao.getExactDuplicateGroupsFlow() } returns flowOf(listOf(group))
 
-        repository.exactGroupsFlow.test {
-            val result = awaitItem()
-            assertThat(result).hasSize(1)
-            assertThat(result[0].groupId).isEqualTo("g1")
-            cancelAndIgnoreRemainingEvents()
+            repository.exactGroupsFlow.test {
+                val result = awaitItem()
+                assertThat(result).hasSize(1)
+                assertThat(result[0].groupId).isEqualTo("g1")
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
-    fun `getVideosForGroup returns mapped videos`() = runTest {
-        val videoIds = listOf(1L, 2L)
-        val videos = videoIds.map { id ->
-            VideoEntity(
-                id = id,
-                uri = "content://media/$id",
-                fileName = "video_$id.mp4",
-                size = 1000L * id,
-                duration = 5000L,
-                width = 1920, height = 1080,
-                dateCreated = 0L, dateModified = 0L,
-                folder = "DCIM/", mimeType = "video/mp4"
-            )
+    fun `getVideosForGroup returns mapped videos`() =
+        runTest {
+            val videoIds = listOf(1L, 2L)
+            val videos =
+                videoIds.map { id ->
+                    VideoEntity(
+                        id = id,
+                        uri = "content://media/$id",
+                        fileName = "video_$id.mp4",
+                        size = 1000L * id,
+                        duration = 5000L,
+                        width = 1920, height = 1080,
+                        dateCreated = 0L, dateModified = 0L,
+                        folder = "DCIM/", mimeType = "video/mp4",
+                    )
+                }
+
+            coEvery { duplicateGroupDao.getVideoIdsForGroup("group1") } returns videoIds
+            coEvery { videoDao.getVideosByIds(videoIds) } returns videos
+
+            val result = repository.getVideosForGroup("group1")
+            assertThat(result).hasSize(2)
+            assertThat(result.map { it.id }).containsExactly(1L, 2L)
         }
-
-        coEvery { duplicateGroupDao.getVideoIdsForGroup("group1") } returns videoIds
-        coEvery { videoDao.getVideosByIds(videoIds) } returns videos
-
-        val result = repository.getVideosForGroup("group1")
-        assertThat(result).hasSize(2)
-        assertThat(result.map { it.id }).containsExactly(1L, 2L)
-    }
 }

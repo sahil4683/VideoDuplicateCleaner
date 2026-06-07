@@ -9,7 +9,6 @@ plugins {
     alias(libs.plugins.ktlint)
 }
 
-
 android {
     namespace = "com.videocleaner"
     compileSdk = 35
@@ -38,7 +37,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             // Signing config should be configured via signingConfigs block
             // and referenced from GitHub secrets in CI/CD
@@ -52,11 +51,12 @@ android {
 
     kotlinOptions {
         jvmTarget = "21"
-        freeCompilerArgs += listOf(
-            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-            "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"
-        )
+        freeCompilerArgs +=
+            listOf(
+                "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+                "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+            )
     }
 
     buildFeatures {
@@ -161,5 +161,3 @@ ktlint {
 detekt {
     config.setFrom(files("$rootDir/detekt.yml"))
 }
-
-
