@@ -5,10 +5,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.detekt)
-    alias(libs.plugins.ktlint)
 }
-
 
 android {
     namespace = "com.videocleaner"
@@ -152,14 +149,3 @@ dependencies {
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.truth)
 }
-
-ktlint {
-    android.set(true)
-    verbose.set(true)
-}
-
-detekt {
-    config.setFrom(files("$rootDir/detekt.yml"))
-}
-
-

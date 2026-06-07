@@ -18,8 +18,6 @@ datastore = "1.1.1"
 kotlinSerialization = "1.7.3"
 splashscreen = "1.0.1"
 detekt = "1.23.7"
-ktlint = "12.1.1"
-
 mockk = "1.13.13"
 turbine = "1.2.0"
 junit = "4.13.2"
@@ -104,5 +102,3 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
-

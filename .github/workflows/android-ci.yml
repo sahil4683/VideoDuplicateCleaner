@@ -15,6 +15,11 @@ jobs:
     name: Lint, Test & Build
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      # Override Gradle daemon JVM args at the runner level.
+      # Keeps heap well within the ubuntu-latest 7 GB limit and avoids
+      # the "maximum heap size is insufficient" warning seen with -Xmx4g.
+      GRADLE_OPTS: "-Xmx2g -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8"
 
     steps:
       - name: Checkout code
@@ -27,9 +32,11 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-home-cache-cleanup: true
+          # gradle-home-cache-cleanup was removed in Gradle 9.x (writeOnly property).
+          # The v4 action is compatible with both Gradle 8.x and 9.x.
+          cache-read-only: false
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
