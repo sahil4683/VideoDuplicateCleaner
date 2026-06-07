@@ -1,9 +1,8 @@
 package com.videocleaner.domain
 
-import android.net.Uri
-import io.mockk.mockk
 import com.google.common.truth.Truth.assertThat
 import com.videocleaner.domain.model.VideoFile
+import io.mockk.mockk
 import org.junit.Test
 
 /**
