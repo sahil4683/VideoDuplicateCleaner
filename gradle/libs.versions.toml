@@ -27,6 +27,7 @@ junitExt = "1.2.1"
 espresso = "3.6.1"
 truth = "1.4.4"
 archCoreTesting = "2.2.0"
+paging = "3.3.0"
 
 [libraries]
 # AndroidX Core
@@ -61,6 +62,8 @@ room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
+androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 
 # Coroutines
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
