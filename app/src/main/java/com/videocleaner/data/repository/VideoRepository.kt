@@ -317,9 +317,11 @@ class VideoRepository
                     totalVideos = count,
                     totalStorageBytes = totalSize ?: 0L,
                     exactDuplicateGroups = exactCount,
-                    exactDuplicateVideos = 0, // computed separately
+                    // computed separately
+                    exactDuplicateVideos = 0,
                     similarVideoGroups = similarCount,
-                    recoverableBytes = 0L, // computed from groups
+                    // computed from groups
+                    recoverableBytes = 0L,
                 )
             }
         }

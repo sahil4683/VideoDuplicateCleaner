@@ -10,12 +10,16 @@ data class VideoFile(
     val id: Long,
     val uri: Uri,
     val fileName: String,
-    val size: Long, // bytes
-    val duration: Long, // milliseconds
+    // bytes
+    val size: Long,
+    // milliseconds
+    val duration: Long,
     val width: Int,
     val height: Int,
-    val dateCreated: Long, // epoch seconds
-    val dateModified: Long, // epoch seconds
+    // epoch seconds
+    val dateCreated: Long,
+    // epoch seconds
+    val dateModified: Long,
     val folder: String,
     val mimeType: String,
     val sha256: String? = null,

@@ -11,5 +11,6 @@ data class DashboardStats(
     val similarVideoGroups: Int = 0,
     val similarVideoCount: Int = 0,
     val recoverableBytes: Long = 0L,
-    val lastScanTime: Long = 0L, // epoch millis, 0 = never scanned
+    // epoch millis, 0 = never scanned
+    val lastScanTime: Long = 0L,
 )
