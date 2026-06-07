@@ -39,11 +39,11 @@ class VideoRepository
     ) {
         // ──────────────────────── Observables ────────────────────────
 
-        val allVideosFlow: Flow<List<VideoEntity>> = videoDao.getAllFlow()
-        val videoCountFlow: Flow<Int> = videoDao.getCountFlow()
-        val totalSizeFlow: Flow<Long?> = videoDao.getTotalSizeFlow()
-        val exactGroupsFlow: Flow<List<DuplicateGroupEntity>> = duplicateGroupDao.getExactDuplicateGroupsFlow()
-        val similarGroupsFlow: Flow<List<DuplicateGroupEntity>> = duplicateGroupDao.getSimilarGroupsFlow()
+        val allVideosFlow: Flow<List<VideoEntity>> get() = videoDao.getAllFlow()
+        val videoCountFlow: Flow<Int> get() = videoDao.getCountFlow()
+        val totalSizeFlow: Flow<Long?> get() = videoDao.getTotalSizeFlow()
+        val exactGroupsFlow: Flow<List<DuplicateGroupEntity>> get() = duplicateGroupDao.getExactDuplicateGroupsFlow()
+        val similarGroupsFlow: Flow<List<DuplicateGroupEntity>> get() = duplicateGroupDao.getSimilarGroupsFlow()
 
         fun getAllVideosPaged(): Flow<PagingData<VideoEntity>> =
             Pager(

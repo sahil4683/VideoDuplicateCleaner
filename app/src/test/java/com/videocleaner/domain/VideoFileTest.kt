@@ -1,6 +1,7 @@
 package com.videocleaner.domain
 
 import android.net.Uri
+import io.mockk.mockk
 import com.google.common.truth.Truth.assertThat
 import com.videocleaner.domain.model.VideoFile
 import org.junit.Test
@@ -17,7 +18,7 @@ class VideoFileTest {
         height: Int = 1080,
     ) = VideoFile(
         id = 1L,
-        uri = Uri.EMPTY,
+        uri = mockk(),
         fileName = "test.mp4",
         size = size,
         duration = duration,

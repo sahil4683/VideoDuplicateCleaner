@@ -1,6 +1,7 @@
 package com.videocleaner.domain
 
 import android.net.Uri
+import io.mockk.mockk
 import com.google.common.truth.Truth.assertThat
 import com.videocleaner.domain.model.DuplicateGroup
 import com.videocleaner.domain.model.DuplicateType
@@ -16,7 +17,7 @@ class DuplicateGroupTest {
         size: Long,
     ) = VideoFile(
         id = id,
-        uri = Uri.EMPTY,
+        uri = mockk(),
         fileName = "video_$id.mp4",
         size = size,
         duration = 5000L,
