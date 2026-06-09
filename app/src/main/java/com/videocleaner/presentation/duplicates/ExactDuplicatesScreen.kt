@@ -13,6 +13,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import com.videocleaner.domain.model.DuplicateGroup
 import com.videocleaner.presentation.components.ConfirmDeleteDialog
 import com.videocleaner.presentation.components.VideoCard
@@ -29,6 +31,28 @@ fun ExactDuplicatesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val deleteLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            viewModel.onDeleteConfirmedExternally()
+        } else {
+            viewModel.onDeleteCancelled()
+        }
+    }
+
+    LaunchedEffect(uiState.pendingDeleteIntentSender) {
+        uiState.pendingDeleteIntentSender?.let { intentSender ->
+            try {
+                deleteLauncher.launch(
+                    androidx.activity.result.IntentSenderRequest.Builder(intentSender).build()
+                )
+            } catch (e: Exception) {
+                viewModel.onDeleteCancelled()
+            }
+        }
+    }
 
     LaunchedEffect(uiState.showDeleteSuccessSnackbar) {
         if (uiState.showDeleteSuccessSnackbar) {
@@ -109,6 +133,14 @@ fun ExactDuplicatesScreen(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
+                    item(key = "global_smart_select") {
+                        GlobalSmartSelectCard(
+                            onSelectKeepLargest = viewModel::keepLargestForAll,
+                            onSelectKeepNewest = viewModel::keepNewestForAll,
+                            onSelectKeepHighestRes = viewModel::keepHDForAll,
+                        )
+                    }
+
                     items(
                         items = uiState.groups,
                         key = { it.groupId },
@@ -256,3 +288,80 @@ private fun formatBytes(bytes: Long): String =
         bytes >= 1_024 -> "%.1f KB".format(bytes / 1_024.0)
         else -> "$bytes B"
     }
+
+@Composable
+private fun GlobalSmartSelectCard(
+    onSelectKeepLargest: () -> Unit,
+    onSelectKeepNewest: () -> Unit,
+    onSelectKeepHighestRes: () -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
+        ),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AutoAwesome,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = "Auto-Select Duplicates",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+            }
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "Mark duplicates for deletion across all groups, leaving one file per group.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f),
+            )
+            Spacer(Modifier.height(12.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Button(
+                    onClick = onSelectKeepLargest,
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
+                ) {
+                    Text("Keep Largest", style = MaterialTheme.typography.labelMedium)
+                }
+                Button(
+                    onClick = onSelectKeepNewest,
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
+                ) {
+                    Text("Keep Newest", style = MaterialTheme.typography.labelMedium)
+                }
+                Button(
+                    onClick = onSelectKeepHighestRes,
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
+                ) {
+                    Text("Keep HD", style = MaterialTheme.typography.labelMedium)
+                }
+            }
+        }
+    }
+}

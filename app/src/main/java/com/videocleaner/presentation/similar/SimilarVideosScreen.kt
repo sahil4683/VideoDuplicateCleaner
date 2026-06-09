@@ -13,6 +13,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import com.videocleaner.domain.model.DuplicateGroup
 import com.videocleaner.presentation.components.ConfirmDeleteDialog
 import com.videocleaner.presentation.components.VideoCard
@@ -29,6 +31,28 @@ fun SimilarVideosScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val deleteLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            viewModel.onDeleteConfirmedExternally()
+        } else {
+            viewModel.onDeleteCancelled()
+        }
+    }
+
+    LaunchedEffect(uiState.pendingDeleteIntentSender) {
+        uiState.pendingDeleteIntentSender?.let { intentSender ->
+            try {
+                deleteLauncher.launch(
+                    androidx.activity.result.IntentSenderRequest.Builder(intentSender).build()
+                )
+            } catch (e: Exception) {
+                viewModel.onDeleteCancelled()
+            }
+        }
+    }
 
     LaunchedEffect(uiState.showDeleteSuccessSnackbar) {
         if (uiState.showDeleteSuccessSnackbar) {

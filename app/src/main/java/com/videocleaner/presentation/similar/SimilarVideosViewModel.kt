@@ -2,6 +2,7 @@ package com.videocleaner.presentation.similar
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.videocleaner.data.repository.DeleteResult
 import com.videocleaner.data.repository.VideoRepository
 import com.videocleaner.domain.model.DuplicateGroup
 import com.videocleaner.domain.model.DuplicateType
@@ -64,17 +65,102 @@ class SimilarVideosViewModel
 
         fun deleteSelected() {
             val ids = _uiState.value.selectedVideoIds.toList()
+            if (ids.isEmpty()) return
+
             viewModelScope.launch {
                 _uiState.update { it.copy(isDeleting = true, showDeleteDialog = false) }
-                val deleted = videoRepository.deleteVideos(ids)
-                _uiState.update { state ->
-                    state.copy(
-                        isDeleting = false,
-                        selectedVideoIds = emptySet(),
-                        deletedCount = deleted,
-                        showDeleteSuccessSnackbar = true,
-                    )
+                when (val result = videoRepository.deleteVideos(ids)) {
+                    is DeleteResult.Success -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                isDeleting = false,
+                                selectedVideoIds = emptySet(),
+                                deletedCount = result.deletedCount,
+                                showDeleteSuccessSnackbar = true,
+                            )
+                        }
+                    }
+                    is DeleteResult.RequiresPermission -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                isDeleting = false,
+                                pendingDeleteIntentSender = result.intentSender,
+                                pendingDeleteVideoIds = result.videoIds,
+                            )
+                        }
+                    }
+                    is DeleteResult.Error -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                isDeleting = false,
+                                errorMessage = result.message,
+                            )
+                        }
+                    }
                 }
+            }
+        }
+
+        fun onDeleteConfirmedExternally() {
+            val ids = _uiState.value.pendingDeleteVideoIds
+            if (ids.isEmpty()) return
+            viewModelScope.launch {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    videoRepository.deleteVideosFromDb(ids)
+                    _uiState.update { state ->
+                        state.copy(
+                            selectedVideoIds = state.selectedVideoIds.filter { it !in ids }.toSet(),
+                            deletedCount = ids.size,
+                            showDeleteSuccessSnackbar = true,
+                            pendingDeleteIntentSender = null,
+                            pendingDeleteVideoIds = emptyList(),
+                        )
+                    }
+                } else {
+                    _uiState.update { state -> state.copy(isDeleting = true) }
+                    when (val result = videoRepository.deleteVideos(ids)) {
+                        is DeleteResult.Success -> {
+                            _uiState.update { state ->
+                                state.copy(
+                                    isDeleting = false,
+                                    selectedVideoIds = state.selectedVideoIds.filter { it !in ids }.toSet(),
+                                    deletedCount = result.deletedCount,
+                                    showDeleteSuccessSnackbar = true,
+                                    pendingDeleteIntentSender = null,
+                                    pendingDeleteVideoIds = emptyList(),
+                                )
+                            }
+                        }
+                        is DeleteResult.RequiresPermission -> {
+                            _uiState.update { state ->
+                                state.copy(
+                                    isDeleting = false,
+                                    pendingDeleteIntentSender = result.intentSender,
+                                    pendingDeleteVideoIds = result.videoIds,
+                                )
+                            }
+                        }
+                        is DeleteResult.Error -> {
+                            _uiState.update { state ->
+                                state.copy(
+                                    isDeleting = false,
+                                    errorMessage = result.message,
+                                    pendingDeleteIntentSender = null,
+                                    pendingDeleteVideoIds = emptyList(),
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        fun onDeleteCancelled() {
+            _uiState.update { state ->
+                state.copy(
+                    pendingDeleteIntentSender = null,
+                    pendingDeleteVideoIds = emptyList(),
+                )
             }
         }
 
@@ -92,4 +178,6 @@ data class SimilarVideosUiState(
     val showDeleteSuccessSnackbar: Boolean = false,
     val deletedCount: Int = 0,
     val errorMessage: String? = null,
+    val pendingDeleteIntentSender: android.content.IntentSender? = null,
+    val pendingDeleteVideoIds: List<Long> = emptyList(),
 )

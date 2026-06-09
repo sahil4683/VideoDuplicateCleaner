@@ -1,8 +1,11 @@
 package com.videocleaner.data.repository
 
+import android.app.RecoverableSecurityException
 import android.content.Context
+import android.content.IntentSender
 import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -275,32 +278,51 @@ class VideoRepository
          * Supports scoped storage (Android 10+).
          *
          * @param videoIds IDs of videos to delete
-         * @return Number of successfully deleted files
+         * @return DeleteResult containing the outcome of the deletion
          */
-        suspend fun deleteVideos(videoIds: List<Long>): Int {
-            var deletedCount = 0
+        suspend fun deleteVideos(videoIds: List<Long>): DeleteResult {
             val contentResolver = context.contentResolver
+            val videos = videoIds.mapNotNull { id -> videoDao.getById(id) }
+            val uris = videos.map { Uri.parse(it.uri) }
 
-            videoIds.forEach { id ->
-                val video = videoDao.getById(id) ?: return@forEach
-                val uri = Uri.parse(video.uri)
+            if (uris.isEmpty()) return DeleteResult.Success(0)
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        // Android 11+: Use batch delete (requires user confirmation via Activity)
-                        // For simplicity, we use direct delete which works for our own files
-                        contentResolver.delete(uri, null, null)
-                    } else {
-                        contentResolver.delete(uri, null, null)
-                    }
-                    videoDao.deleteById(id)
-                    deletedCount++
+                    val pendingIntent = MediaStore.createDeleteRequest(contentResolver, uris)
+                    return DeleteResult.RequiresPermission(pendingIntent.intentSender, videoIds)
                 } catch (e: Exception) {
-                    // SecurityException or other error - skip this file
+                    return DeleteResult.Error(e.message ?: "Failed to create delete request")
                 }
+            } else {
+                var deletedCount = 0
+                for (video in videos) {
+                    val uri = Uri.parse(video.uri)
+                    try {
+                        contentResolver.delete(uri, null, null)
+                        videoDao.deleteById(video.id)
+                        deletedCount++
+                    } catch (e: SecurityException) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && e is RecoverableSecurityException) {
+                            return DeleteResult.RequiresPermission(e.userAction.actionIntent.intentSender, listOf(video.id))
+                        }
+                        // Skip if other security issues
+                    } catch (e: Exception) {
+                        // Skip
+                    }
+                }
+                return DeleteResult.Success(deletedCount)
             }
+        }
 
-            return deletedCount
+        /**
+         * Deletes video records from the local database.
+         * Call this after external deletion (e.g. via MediaStore intent result) completes.
+         */
+        suspend fun deleteVideosFromDb(videoIds: List<Long>) {
+            videoIds.forEach { id ->
+                videoDao.deleteById(id)
+            }
         }
 
         // ──────────────────────── Dashboard Stats ────────────────────────
@@ -326,3 +348,9 @@ class VideoRepository
             }
         }
     }
+
+sealed class DeleteResult {
+    data class Success(val deletedCount: Int) : DeleteResult()
+    data class RequiresPermission(val intentSender: IntentSender, val videoIds: List<Long>) : DeleteResult()
+    data class Error(val message: String) : DeleteResult()
+}
