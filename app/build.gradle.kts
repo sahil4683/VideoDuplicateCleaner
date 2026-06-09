@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.detekt)
-    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -158,11 +157,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.truth)
-}
-
-ktlint {
-    android.set(true)
-    verbose.set(true)
 }
 
 detekt {

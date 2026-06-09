@@ -122,7 +122,7 @@ com.videocleaner/
 | Preferences | DataStore |
 | Serialization | kotlinx.serialization |
 | Testing | JUnit4 + MockK + Turbine + Truth |
-| Static Analysis | ktlint + detekt |
+| Static Analysis | detekt |
 | Build | Gradle Kotlin DSL + Version Catalogs |
 
 ---
@@ -155,7 +155,7 @@ cd video-duplicate-cleaner
 ./gradlew lint
 
 # Run static analysis
-./gradlew ktlintCheck detekt
+./gradlew detekt
 ```
 
 ### Setting Up Release Signing
@@ -220,9 +220,9 @@ cd video-duplicate-cleaner
 
 | Workflow | Trigger | Steps |
 |---------|---------|-------|
-| `android-ci.yml` | Push/PR to main/develop | ktlint → detekt → lint → unit tests → debug APK |
+| `android-ci.yml` | Push/PR to main/develop | detekt → lint → unit tests → debug APK |
 | `release.yml` | Tag `v*` | Release APK + AAB → sign → GitHub Release |
-| `code-quality.yml` | PR to main | ktlint + detekt checks |
+| `code-quality.yml` | PR to main | detekt checks |
 
 ---
 

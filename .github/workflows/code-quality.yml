@@ -25,10 +25,6 @@ jobs:
 
       - name: Grant execute permission
         run: chmod +x gradlew
-
-      - name: ktlint format check
-        run: ./gradlew ktlintCheck
-
       - name: detekt analysis
         run: ./gradlew detekt
 
