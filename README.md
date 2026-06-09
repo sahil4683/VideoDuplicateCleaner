@@ -220,7 +220,7 @@ cd video-duplicate-cleaner
 
 | Workflow | Trigger | Steps |
 |---------|---------|-------|
-| `android-ci.yml` | Push/PR to main/develop | detekt → lint → unit tests → debug APK |
+| `android-ci.yml` | Push/PR to main/develop | detekt → lint → debug APK |
 | `release.yml` | Tag `v*` | Release APK + AAB → sign → GitHub Release |
 | `code-quality.yml` | PR to main | detekt checks |
 

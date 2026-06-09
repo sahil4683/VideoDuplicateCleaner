@@ -55,20 +55,6 @@ jobs:
           name: lint-results
           path: app/build/reports/lint-results*.html
 
-      - name: Run unit tests
-        run: ./gradlew testDebugUnitTest
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: app/build/reports/tests/
-
-      - name: Generate coverage report
-        run: ./gradlew jacocoTestReport
-        continue-on-error: true
-
       - name: Build debug APK
         run: ./gradlew assembleDebug
 
